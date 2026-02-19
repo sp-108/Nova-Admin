@@ -1,0 +1,300 @@
+﻿@model MultiStepFormApp.Models.CompleteFormViewModel
+
+@{
+    ViewData["Title"] = "Preview";
+}
+
+<div class="container mt-4 mb-5">
+
+    <h2 class="text-center fw-bold mb-1">Application Preview</h2>
+    <p class="text-center text-muted mb-4">
+        Please verify your details before final submission
+    </p>
+
+
+    <!-- ================= PERSONAL DETAILS ================= -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white fw-semibold">
+            Personal Details
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <span class="label">Full Name</span>
+                        <span class="value">
+                            @(Model.PersonalDetails?.FirstName)
+                            @(Model.PersonalDetails?.MiddleName)
+                            @(Model.PersonalDetails?.LastName)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <span class="label">DOB</span>
+                        <span class="value">@Model.PersonalDetails?.DOB.ToString("dd MMM yyyy")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <span class="label">Age</span>
+                        <span class="value">@Model.PersonalDetails?.Age</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Mobile</span>
+                        <span class="value">@Model.PersonalDetails?.MobileNumber</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Aadhaar</span>
+                        <span class="value">@Model.PersonalDetails?.AadhaarNumber</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Gender</span>
+                        <span class="value">@Model.PersonalDetails?.Gender</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Marital Status</span>
+                        <span class="value">@Model.PersonalDetails?.IsMarried</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Nationality</span>
+                        <span class="value">@Model.PersonalDetails?.Nationality</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="label">Hobbies</span>
+                        <span class="value">@Model.PersonalDetails?.Hobbies</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <span class="label">Father</span>
+                        <span class="value">
+                            @Model.PersonalDetails?.FatherName - @Model.PersonalDetails?.FatherOccupation
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-box">
+                        <span class="label">Mother</span>
+                        <span class="value">
+                            @Model.PersonalDetails?.MotherName - @Model.PersonalDetails?.MotherOccupation
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= EDUCATION DETAILS ================= -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-success text-white fw-semibold">
+            Education Details
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.QualificationDetails?.Educations != null && Model.QualificationDetails.Educations.Count > 0)
+            {
+                int i = 1;
+                foreach (var edu in Model.QualificationDetails.Educations)
+                {
+                    <div class="edu-card mb-3">
+                        <div class="fw-bold mb-2 text-success">Education @i</div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <span class="label">Type</span>
+                                    <span class="value">@edu.EducationType</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <span class="label">Year</span>
+                                    <span class="value">@edu.PassingYear</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <span class="label">Percentage</span>
+                                    <span class="value">@edu.Percentage %</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-box">
+                                    <span class="label">Institute</span>
+                                    <span class="value">@edu.InstituteName</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-box">
+                                    <span class="label">Board/University</span>
+                                    <span class="value">@edu.BoardOrUniversity</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="info-box">
+                                    <span class="label">Specialization</span>
+                                    <span class="value">@edu.Specialization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    i++;
+                }
+            }
+            else
+            {
+                <p class="text-muted">No education details added.</p>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- ================= ADDRESS DETAILS ================= -->
+    <div class="card shadow-sm mb-5 border-0">
+        <div class="card-header bg-dark text-white fw-semibold">
+            Address Details
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Correspondence -->
+                <div class="col-md-6">
+                    <div class="address-card">
+                        <div class="fw-semibold mb-2 text-dark">Correspondence Address</div>
+
+                        <div>@Model.AddressDetails?.CorrAddressLine</div>
+                        <div>
+                            @Model.AddressDetails?.CorrDistrict,
+                            @Model.AddressDetails?.CorrState
+                        </div>
+                        <div>
+                            @Model.AddressDetails?.CorrCountry - @Model.AddressDetails?.CorrPincode
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permanent -->
+                <div class="col-md-6">
+                    <div class="address-card">
+                        <div class="fw-semibold mb-2 text-dark">Permanent Address</div>
+
+                        <div>@Model.AddressDetails?.PermAddressLine</div>
+                        <div>
+                            @Model.AddressDetails?.PermDistrict,
+                            @Model.AddressDetails?.PermState
+                        </div>
+                        <div>
+                            @Model.AddressDetails?.PermCountry - @Model.AddressDetails?.PermPincode
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= SUBMIT BUTTON ================= -->
+    <div class="sticky-submit shadow-lg">
+        <a asp-action="Address" class="btn btn-outline-secondary btn-lg px-4">
+            Back
+        </a>
+
+        <form asp-action="SubmitForm" method="post" class="d-inline">
+            <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold">
+                Final Submit
+            </button>
+        </form>
+    </div>
+
+</div>
+
+
+<style>
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid #e5e7eb;
+    }
+
+        .info-box .label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .info-box .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+    .edu-card {
+        background: #fdfefe;
+        border: 1px solid #e6f4ea;
+        border-left: 5px solid #28a745;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .address-card {
+        background: #fafafa;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #eaeaea;
+        line-height: 1.6;
+    }
+
+    .sticky-submit {
+        position: sticky;
+        bottom: 10px;
+        background: white;
+        padding: 15px;
+        border-radius: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+</style>

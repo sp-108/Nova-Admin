@@ -1,0 +1,231 @@
+﻿@model MultiStepFormApp.Models.AddressDetails
+
+@{
+    ViewData["Title"] = "Address Details";
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Application Form</h2>
+        <p class="text-muted">Step 3 of 3 — Address Details</p>
+    </div>
+
+    <form asp-action="Address" method="post">
+
+        <div class="row g-4">
+
+            <!-- ================= CORRESPONDENCE ================= -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-primary text-white fw-semibold">
+                        Correspondence Address
+                    </div>
+
+                    <div class="card-body">
+
+                        <label class="form-label">Country</label>
+                        <select asp-for="CorrCountry" id="CorrCountry" class="form-select modern-input"></select>
+                        <span asp-validation-for="CorrCountry" class="text-danger small"></span>
+
+                        <label class="form-label mt-3">State</label>
+                        <select asp-for="CorrState" id="CorrState" class="form-select modern-input"></select>
+                        <span asp-validation-for="CorrState" class="text-danger small"></span>
+
+                        <label class="form-label mt-3">District</label>
+                        <select asp-for="CorrDistrict" id="CorrDistrict" class="form-select modern-input"></select>
+                        <span asp-validation-for="CorrDistrict" class="text-danger small"></span>
+
+                        <label class="form-label mt-3">Address Line</label>
+                        <input asp-for="CorrAddressLine" id="CorrAddressLine" class="form-control modern-input" placeholder="Street, Area, House No." />
+
+                        <label class="form-label mt-3">Pincode</label>
+                        <input asp-for="CorrPincode" id="CorrPincode" class="form-control modern-input" placeholder="6 digit pincode" />
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ================= PERMANENT ================= -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-dark text-white fw-semibold">
+                        Permanent Address
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="form-check form-switch mb-3">
+                            <input asp-for="SameAsCorrespondence" id="SameAsCorrespondence" class="form-check-input">
+                            <label class="form-check-label fw-semibold">
+                                Same as correspondence address
+                            </label>
+                        </div>
+
+                        <label class="form-label">Country</label>
+                        <select asp-for="PermCountry" id="PermCountry" class="form-select modern-input"></select>
+
+                        <label class="form-label mt-3">State</label>
+                        <select asp-for="PermState" id="PermState" class="form-select modern-input"></select>
+
+                        <label class="form-label mt-3">District</label>
+                        <select asp-for="PermDistrict" id="PermDistrict" class="form-select modern-input"></select>
+
+                        <label class="form-label mt-3">Address Line</label>
+                        <input asp-for="PermAddressLine" id="PermAddressLine" class="form-control modern-input" placeholder="Street, Area, House No." />
+
+                        <label class="form-label mt-3">Pincode</label>
+                        <input asp-for="PermPincode" id="PermPincode" class="form-control modern-input" placeholder="6 digit pincode" />
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="d-flex justify-content-between mt-4">
+            <a asp-action="Qualification" class="btn btn-outline-secondary px-4">← Back</a>
+            <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold shadow-sm">
+                Preview & Submit →
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const model = {
+            corrCountry: "@(Model.CorrCountry ?? "")",
+            corrState: "@(Model.CorrState ?? "")",
+            corrDistrict: "@(Model.CorrDistrict ?? "")",
+            permCountry: "@(Model.PermCountry ?? "")",
+            permState: "@(Model.PermState ?? "")",
+            permDistrict: "@(Model.PermDistrict ?? "")"
+        };
+
+        async function loadCountries(selectId, selectedValue){
+            let res = await fetch("https://countriesnow.space/api/v0.1/countries/positions");
+            let data = await res.json();
+
+            let s = document.getElementById(selectId);
+            s.innerHTML='<option value="">Select Country</option>';
+
+            data.data.forEach(c=>{
+                s.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+
+            if(selectedValue) s.value = selectedValue;
+        }
+
+        async function loadStates(countryId,stateId,selectedValue){
+            let country=document.getElementById(countryId).value;
+            if(!country) return;
+
+            let res = await fetch("https://countriesnow.space/api/v0.1/countries/states",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({country:country})
+            });
+
+            let data = await res.json();
+            let s=document.getElementById(stateId);
+            s.innerHTML='<option value="">Select State</option>';
+
+            data.data.states.forEach(st=>{
+                s.innerHTML+=`<option value="${st.name}">${st.name}</option>`;
+            });
+
+            if(selectedValue) s.value = selectedValue;
+        }
+
+        async function loadDistricts(countryId,stateId,distId,selectedValue){
+            let country=document.getElementById(countryId).value;
+            let state=document.getElementById(stateId).value;
+            if(!state) return;
+
+            let res = await fetch("https://countriesnow.space/api/v0.1/countries/state/cities",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({country:country,state:state})
+            });
+
+            let data = await res.json();
+            let d=document.getElementById(distId);
+            d.innerHTML='<option value="">Select District</option>';
+
+            data.data.forEach(c=>{
+                d.innerHTML+=`<option value="${c}">${c}</option>`;
+            });
+
+            if(selectedValue) d.value = selectedValue;
+        }
+
+        async function copyAddress(){
+            await loadCountries("PermCountry", CorrCountry.value);
+            await loadStates("PermCountry","PermState", CorrState.value);
+            await loadDistricts("PermCountry","PermState","PermDistrict", CorrDistrict.value);
+
+            PermAddressLine.value = CorrAddressLine.value;
+            PermPincode.value = CorrPincode.value;
+        }
+
+        document.addEventListener("DOMContentLoaded", async function(){
+
+            await loadCountries("CorrCountry", model.corrCountry);
+            await loadStates("CorrCountry","CorrState", model.corrState);
+            await loadDistricts("CorrCountry","CorrState","CorrDistrict", model.corrDistrict);
+
+            await loadCountries("PermCountry", model.permCountry);
+            await loadStates("PermCountry","PermState", model.permState);
+            await loadDistricts("PermCountry","PermState","PermDistrict", model.permDistrict);
+
+            CorrCountry.onchange=()=>loadStates("CorrCountry","CorrState");
+            PermCountry.onchange=()=>loadStates("PermCountry","PermState");
+
+            CorrState.onchange=()=>loadDistricts("CorrCountry","CorrState","CorrDistrict");
+            PermState.onchange=()=>loadDistricts("PermCountry","PermState","PermDistrict");
+
+            SameAsCorrespondence.onchange=function(){
+                if(this.checked) copyAddress();
+            };
+        });
+
+    </script>
+
+    <style>
+
+        .modern-input {
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid #dcdcdc;
+            transition: .2s;
+        }
+
+            .modern-input:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+            }
+
+        .card {
+            border-radius: 16px;
+        }
+
+        .card-header {
+            border-top-left-radius: 16px !important;
+            border-top-right-radius: 16px !important;
+            letter-spacing: .5px;
+        }
+
+    </style>
+
+}

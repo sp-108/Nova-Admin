@@ -1,0 +1,193 @@
+﻿@model MultiStepFormApp.Models.PersonalDetails
+@using MultiStepFormApp.Models
+
+@{
+    ViewData["Title"] = "Personal Details";
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Application Form</h2>
+        <p class="text-muted">Step 1 of 3 — Personal Information</p>
+    </div>
+
+    <form asp-action="PersonalDetails" method="post">
+
+        <!-- ================= BASIC INFO ================= -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-primary text-white fw-semibold">
+                Basic Information
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control modern-input" placeholder="Enter first name" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Middle Name</label>
+                        <input asp-for="MiddleName" class="form-control modern-input" placeholder="Optional" />
+                        <span asp-validation-for="MiddleName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control modern-input" placeholder="Enter last name" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Date of Birth</label>
+                        <input asp-for="DOB" type="date" class="form-control modern-input" />
+                        <span asp-validation-for="DOB" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Mobile Number</label>
+                        <input asp-for="MobileNumber" class="form-control modern-input" placeholder="+919876543210" />
+                        <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Aadhaar Number</label>
+                        <input asp-for="AadhaarNumber" class="form-control modern-input" placeholder="12 digit Aadhaar" />
+                        <span asp-validation-for="AadhaarNumber" class="text-danger small"></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ================= PERSONAL INFO ================= -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-success text-white fw-semibold">
+                Personal Information
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">Gender</label>
+                        <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-select modern-input">
+                            <option value="">Select Gender</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Marital Status</label>
+                        <select asp-for="IsMarried" asp-items="Html.GetEnumSelectList<IsMarried>()" class="form-select modern-input">
+                            <option value="">Select Status</option>
+                        </select>
+                        <span asp-validation-for="IsMarried" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Nationality</label>
+                        <input asp-for="Nationality" class="form-control modern-input" placeholder="e.g. Indian" />
+                        <span asp-validation-for="Nationality" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Hobbies</label>
+                        <input asp-for="Hobbies" class="form-control modern-input" placeholder="Reading, Sports, Music..." />
+                        <span asp-validation-for="Hobbies" class="text-danger small"></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ================= PARENTS ================= -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white fw-semibold">
+                Parents Details
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Father Name</label>
+                        <input asp-for="FatherName" class="form-control modern-input" />
+                        <span asp-validation-for="FatherName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Father Occupation</label>
+                        <input asp-for="FatherOccupation" class="form-control modern-input" />
+                        <span asp-validation-for="FatherOccupation" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mother Name</label>
+                        <input asp-for="MotherName" class="form-control modern-input" />
+                        <span asp-validation-for="MotherName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mother Occupation</label>
+                        <input asp-for="MotherOccupation" class="form-control modern-input" />
+                        <span asp-validation-for="MotherOccupation" class="text-danger small"></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- SUBMIT -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold shadow-sm">
+                Save & Next →
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+
+    .modern-input {
+        border-radius: 10px;
+        padding: 10px 12px;
+        border: 1px solid #dcdcdc;
+        transition: all .2s ease;
+    }
+
+        .modern-input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+        }
+
+    .card {
+        border-radius: 16px;
+    }
+
+    .card-header {
+        border-top-left-radius: 16px !important;
+        border-top-right-radius: 16px !important;
+        font-size: 15px;
+        letter-spacing: .5px;
+    }
+
+</style>

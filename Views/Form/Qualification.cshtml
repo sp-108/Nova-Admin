@@ -1,0 +1,203 @@
+﻿@model MultiStepFormApp.Models.QualificationDetails
+@using MultiStepFormApp.Models
+
+@{
+    ViewData["Title"] = "Education Details";
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Application Form</h2>
+        <p class="text-muted">Step 2 of 3 — Education Details</p>
+    </div>
+
+    <form asp-action="Qualification" method="post">
+
+        <div id="educationContainer">
+
+            @for (int i = 0; i < Model.Educations.Count; i++)
+            {
+                <div class="card shadow-sm border-0 mb-4 education-card" id="edu_@i">
+
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">Education @(i + 1)</span>
+                        <button type="button" class="btn btn-sm btn-light text-danger" onclick="removeEducation(@i)">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Education Type</label>
+                                <select asp-for="Educations[@i].EducationType"
+                                        class="form-select modern-input"
+                                        asp-items="Html.GetEnumSelectList<EducationType>()"></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Institute Name</label>
+                                <input asp-for="Educations[@i].InstituteName" class="form-control modern-input" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Board / University</label>
+                                <input asp-for="Educations[@i].BoardOrUniversity" class="form-control modern-input" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Passing Year</label>
+                                <input asp-for="Educations[@i].PassingYear" class="form-control modern-input" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Percentage</label>
+                                <input asp-for="Educations[@i].Percentage" class="form-control modern-input" />
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Specialization</label>
+                                <input asp-for="Educations[@i].Specialization" class="form-control modern-input" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+
+        <!-- ADD BUTTON -->
+        <div class="text-center mb-4">
+            <button type="button" class="btn btn-outline-success btn-lg px-4 shadow-sm" onclick="addEducation()">
+                + Add Another Education
+            </button>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="d-flex justify-content-between">
+            <a asp-action="PersonalDetails" class="btn btn-outline-secondary px-4">← Back</a>
+            <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold shadow-sm">
+                Save & Next →
+            </button>
+        </div>
+
+    </form>
+</div>
+
+
+@section Scripts {
+
+    <script>
+        let index = @Model.Educations.Count;
+
+        function addEducation(){
+
+            let html = `
+            <div class="card shadow-sm border-0 mb-4 education-card" id="edu_${index}">
+
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Education ${index + 1}</span>
+                    <button type="button" class="btn btn-sm btn-light text-danger" onclick="removeEducation(${index})">✕</button>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Education Type</label>
+                            <select name="Educations[${index}].EducationType" class="form-select modern-input">
+                                <option value="HighSchool">High School</option>
+                                <option value="SeniorSecondary">Senior Secondary</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Graduation">Graduation</option>
+                                <option value="PostGraduation">Post Graduation</option>
+                                <option value="PhD">PhD</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Institute Name</label>
+                            <input name="Educations[${index}].InstituteName" class="form-control modern-input"/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Board / University</label>
+                            <input name="Educations[${index}].BoardOrUniversity" class="form-control modern-input"/>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Passing Year</label>
+                            <input name="Educations[${index}].PassingYear" class="form-control modern-input"/>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Percentage</label>
+                            <input name="Educations[${index}].Percentage" class="form-control modern-input"/>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Specialization</label>
+                            <input name="Educations[${index}].Specialization" class="form-control modern-input"/>
+                        </div>
+
+                    </div>
+                </div>
+            </div>`;
+
+            document.getElementById("educationContainer").insertAdjacentHTML('beforeend', html);
+            index++;
+        }
+
+        function removeEducation(i){
+            document.getElementById(`edu_${i}`).remove();
+        }
+    </script>
+
+    <style>
+
+        .modern-input {
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid #dcdcdc;
+            transition: .2s;
+        }
+
+            .modern-input:focus {
+                border-color: #198754;
+                box-shadow: 0 0 0 3px rgba(25,135,84,.15);
+            }
+
+        .card {
+            border-radius: 16px;
+        }
+
+        .card-header {
+            border-top-left-radius: 16px !important;
+            border-top-right-radius: 16px !important;
+            letter-spacing: .4px;
+        }
+
+        .education-card {
+            animation: fadeIn .25s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+
+}
