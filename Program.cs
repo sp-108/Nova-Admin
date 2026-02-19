@@ -3,41 +3,45 @@ using MultiStepFormApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ================= DATABASE CONFIG =================
+// ================= DATABASE DETECTION =================
 
-// Render provides DATABASE_URL automatically
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-
-string connectionString;
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // ===== RENDER POSTGRESQL =====
+    // RENDER POSTGRESQL
     var uri = new Uri(databaseUrl);
-    var userInfo = uri.UserInfo.Split(':');
 
-    connectionString =
-        $"Host={uri.Host};" +
-        $"Port={uri.Port};" +
-        $"Database={uri.AbsolutePath.TrimStart('/')};" +
-        $"Username={userInfo[0]};" +
-        $"Password={userInfo[1]};" +
-        $"SSL Mode=Require;Trust Server Certificate=true";
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
+
+    var host = uri.Host;
+    var port = uri.Port;
+    var database = uri.AbsolutePath.TrimStart('/');
+
+    var connectionString =
+        $"Host={host};" +
+        $"Port={port};" +
+        $"Database={database};" +
+        $"Username={username};" +
+        $"Password={password};" +
+        $"SSL Mode=Require;" +
+        $"Trust Server Certificate=true";
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
 }
 else
 {
-    // ===== LOCAL POSTGRESQL (appsettings.json) =====
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    // LOCAL SQL SERVER / LOCAL POSTGRES
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 }
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
 
 // ================= SERVICES =================
 
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
@@ -49,17 +53,14 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-
 // ================= AUTO MIGRATION =================
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
 
-
-// ================= MIDDLEWARE =================
+// ================= PIPELINE =================
 
 if (!app.Environment.IsDevelopment())
 {
@@ -68,11 +69,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
