@@ -1,61 +1,55 @@
 using Microsoft.EntityFrameworkCore;
 using MultiStepFormApp.Data;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ================= RENDER PORT FIX =================
-// Render dynamically provides PORT
+
+
+// ================= PORT (RENDER FIX) =================
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 
-// ================= DATABASE CONNECTION =================
-// Local = SQL Server
-// Render = PostgreSQL
 
-string? databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-string connectionString;
+// ================= DATABASE =================
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // ---------- SAFE PARSE RENDER POSTGRES URL ----------
+    // Convert postgres:// → Npgsql connection string
     var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
 
-    var userInfo = uri.UserInfo.Split(':', 2);
-    var username = userInfo[0];
-    var password = userInfo.Length > 1 ? userInfo[1] : "";
-
-    var host = uri.Host;
-
-    // IMPORTANT: Render sometimes does not send port
-    var dbPort = uri.Port > 0 ? uri.Port : 5432;
-
-    var database = uri.AbsolutePath.TrimStart('/');
-
-    connectionString =
-        $"Host={host};" +
-        $"Port={dbPort};" +
-        $"Database={database};" +
-        $"Username={username};" +
-        $"Password={password};" +
-        $"SSL Mode=Require;" +
-        $"Trust Server Certificate=true";
+    var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port == -1 ? 5432 : uri.Port,
+        Database = uri.AbsolutePath.Trim('/'),
+        Username = userInfo[0],
+        Password = userInfo.Length > 1 ? userInfo[1] : "",
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true,
+        Pooling = true,
+        Timeout = 15,
+        CommandTimeout = 30
+    };
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString));
+        options.UseNpgsql(npgsqlBuilder.ConnectionString));
 }
 else
 {
-    // ---------- LOCAL SQL SERVER ----------
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+    // Local SQL Server
+    var conn = builder.Configuration.GetConnectionString("DefaultConnection");
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(connectionString));
+        options.UseSqlServer(conn));
 }
+
 
 
 // ================= SERVICES =================
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
@@ -65,24 +59,27 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+
+
 var app = builder.Build();
 
 
-// ================= AUTO MIGRATION (SAFE) =================
+
+// ================= MIGRATION SAFE =================
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
     try
     {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         db.Database.Migrate();
-        Console.WriteLine("Database migration completed.");
+        Console.WriteLine("DB Connected & Migrated");
     }
     catch (Exception ex)
     {
-        Console.WriteLine("Migration failed: " + ex.Message);
+        Console.WriteLine("DB ERROR: " + ex.Message);
     }
 }
+
 
 
 // ================= MIDDLEWARE =================
@@ -93,11 +90,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
