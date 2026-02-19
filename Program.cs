@@ -4,7 +4,7 @@ using MultiStepFormApp.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // ================= RENDER PORT FIX =================
-// Render dynamically gives PORT env variable
+// Render dynamically provides PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
@@ -13,31 +13,43 @@ builder.WebHost.UseUrls($"http://*:{port}");
 // Local = SQL Server
 // Render = PostgreSQL
 
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string? databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // Render PostgreSQL
+    // ---------- SAFE PARSE RENDER POSTGRES URL ----------
     var uri = new Uri(databaseUrl);
-    var userInfo = uri.UserInfo.Split(':');
 
-    var connString =
-        $"Host={uri.Host};" +
-        $"Port={uri.Port};" +
-        $"Database={uri.AbsolutePath.TrimStart('/')};" +
-        $"Username={userInfo[0]};" +
-        $"Password={userInfo[1]};" +
-        $"SSL Mode=Require;Trust Server Certificate=true";
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var username = userInfo[0];
+    var password = userInfo.Length > 1 ? userInfo[1] : "";
+
+    var host = uri.Host;
+
+    // IMPORTANT: Render sometimes does not send port
+    var dbPort = uri.Port > 0 ? uri.Port : 5432;
+
+    var database = uri.AbsolutePath.TrimStart('/');
+
+    connectionString =
+        $"Host={host};" +
+        $"Port={dbPort};" +
+        $"Database={database};" +
+        $"Username={username};" +
+        $"Password={password};" +
+        $"SSL Mode=Require;" +
+        $"Trust Server Certificate=true";
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connString));
+        options.UseNpgsql(connectionString));
 }
 else
 {
-    // Local SQL Server
-    var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+    // ---------- LOCAL SQL SERVER ----------
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(conn));
+        options.UseSqlServer(connectionString));
 }
 
 
@@ -56,11 +68,20 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 
-// ================= AUTO MIGRATION =================
+// ================= AUTO MIGRATION (SAFE) =================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+
+    try
+    {
+        db.Database.Migrate();
+        Console.WriteLine("Database migration completed.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Migration failed: " + ex.Message);
+    }
 }
 
 
