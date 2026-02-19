@@ -146,7 +146,7 @@ namespace MultiStepFormApp.Controllers
             var entry = new FormEntry
             {
                 Name = $"{p.FirstName} {p.LastName}",
-                DOB = p.DOB,
+                DOB = DateTime.SpecifyKind(p.DOB, DateTimeKind.Utc),
                 Age = p.Age,
                 Mobile = p.MobileNumber,
                 Aadhaar = p.AadhaarNumber,
