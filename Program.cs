@@ -3,13 +3,16 @@ using MultiStepFormApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ================= DATABASE DETECTION =================
+// ================= RENDER PORT FIX =================
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
+
+// ================= DATABASE =================
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // RENDER POSTGRESQL
     var uri = new Uri(databaseUrl);
 
     var userInfo = uri.UserInfo.Split(':', 2);
@@ -17,12 +20,15 @@ if (!string.IsNullOrEmpty(databaseUrl))
     var password = Uri.UnescapeDataString(userInfo[1]);
 
     var host = uri.Host;
-    var port = uri.Port;
+
+    // IMPORTANT FIX: default postgres port
+    var dbPort = uri.Port > 0 ? uri.Port : 5432;
+
     var database = uri.AbsolutePath.TrimStart('/');
 
-    var connectionString =
+    var conn =
         $"Host={host};" +
-        $"Port={port};" +
+        $"Port={dbPort};" +
         $"Database={database};" +
         $"Username={username};" +
         $"Password={password};" +
@@ -30,28 +36,27 @@ if (!string.IsNullOrEmpty(databaseUrl))
         $"Trust Server Certificate=true";
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString));
+        options.UseNpgsql(conn));
 }
 else
 {
-    // LOCAL SQL SERVER / LOCAL POSTGRES
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 }
 
-// ================= SERVICES =================
 
+// ================= SERVICES =================
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
-
-builder.Services.AddSession(options =>
+builder.Services.AddSession(o =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+    o.IdleTimeout = TimeSpan.FromMinutes(30);
+    o.Cookie.HttpOnly = true;
+    o.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
+
 
 // ================= AUTO MIGRATION =================
 using (var scope = app.Services.CreateScope())
@@ -60,12 +65,11 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-// ================= PIPELINE =================
 
+// ================= PIPELINE =================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
 
 app.UseStaticFiles();
