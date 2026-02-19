@@ -82,18 +82,23 @@ namespace MultiStepFormApp.Controllers
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : "",
                 LastName = nameParts.Length > 1 ? nameParts[1] : "",
-                DOB = entry.DOB,
-                MobileNumber = entry.Mobile,
-                AadhaarNumber = entry.Aadhaar,
-                Gender = Enum.Parse<Gender>(entry.Gender),
-                IsMarried = Enum.Parse<IsMarried>(entry.MaritalStatus),
-                FatherName = entry.FatherName,
-                MotherName = entry.MotherName,
-                FatherOccupation = entry.FatherOccupation,
-                MotherOccupation = entry.MotherOccupation,
-                Nationality = entry.Nationality,
+
+                DOB = entry.DOB ?? DateTime.Today,
+
+                MobileNumber = entry.Mobile ?? "",
+                AadhaarNumber = entry.Aadhaar ?? "",
+
+                Gender = Enum.TryParse<Gender>(entry.Gender ?? "", out var g) ? g : Gender.Male,
+                IsMarried = Enum.TryParse<IsMarried>(entry.MaritalStatus ?? "", out var m) ? m : IsMarried.Unmarried,
+
+                FatherName = entry.FatherName ?? "",
+                MotherName = entry.MotherName ?? "",
+                FatherOccupation = entry.FatherOccupation ?? "",
+                MotherOccupation = entry.MotherOccupation ?? "",
+                Nationality = entry.Nationality ?? "",
                 Hobbies = entry.Hobbies ?? ""
             };
+
 
 
             // ================= ADDRESS =================
