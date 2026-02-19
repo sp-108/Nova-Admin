@@ -1,61 +1,48 @@
-🚀 Nova-Admin
-✨ Multi-Step Application Form & Admin Management System
-<p align="center"> <b>A production-ready ASP.NET Core MVC web application to collect and manage applicant data</b> </p> <p align="center">
+<div align="center">
+🪐 NOVA ADMIN
+<sub>Multi-Step Application Form & Admin Management System</sub>
+<br> <img src="https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white"/> <img src="https://img.shields.io/badge/ASP.NET%20Core-MVC-5C2D91?style=for-the-badge&logo=dotnet"/> <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white"/> <img src="https://img.shields.io/badge/Entity%20Framework-Core-6DB33F?style=for-the-badge"/> <img src="https://img.shields.io/badge/Hosted%20On-Render-000000?style=for-the-badge"/>
 
+<br><br>
 
-
-
-
-
-
-
-
-
-</p>
 🌐 Live Website
-
 👉 https://nova-admin-torz.onrender.com
+</div>
+<br>
+**📖 About Project**
 
-📌 About The Project
-
-Nova-Admin is a real-world style application portal.
+Nova Admin is a production-ready web application that simulates a real-world application portal
+(College / Job / Scholarship / Government Form System).
 
 Users fill a structured multi-step form → preview → submit → stored in PostgreSQL → managed through admin dashboard.
 
-This project focuses on:
-
-✔ Clean UX
-✔ Structured Data Storage
-✔ Secure Submission Flow
-✔ Production Deployment
-✔ Debugging real hosting issues
-
-🎯 Core Features
+<br>
+✨ Features
 👤 Applicant Side
 
-Multi-step form navigation
+Multi step form navigation
 
-Session-based progress tracking
+Session based progress saving
 
-Edit before final submit
+Preview before submit
 
-Preview full application
+Edit before final submission
 
-Validation protected submission
+Validation protected form
 
-🛠 Admin Dashboard
+🛠 Admin Panel
 
 View all applicants
 
-Detailed profile page
+Detailed profile view
 
-Edit application
+Edit record
 
-Delete records
+Delete record
 
-Dynamic education rendering
+Dynamic education rendering (JSON → UI)
 
-⚙ Backend Capabilities
+⚙ Backend System
 
 ASP.NET Core MVC (.NET 8)
 
@@ -63,36 +50,37 @@ Entity Framework Core
 
 PostgreSQL integration
 
-Auto database migration on deploy
+Automatic migrations on deploy
 
 Production error handling
 
-☁ Production Deployment
+☁ Deployment
 
 Hosted on Render
 
-External PostgreSQL DB
+External PostgreSQL Database
 
 Environment variable configuration
 
 Secure SSL database connection
 
+<br>
 🧱 Tech Stack
 Layer	Technology
-Frontend	Razor + Bootstrap
+Frontend	Razor Views + Bootstrap
 Backend	ASP.NET Core MVC
-Database	PostgreSQL
 ORM	Entity Framework Core
+Database	PostgreSQL
 Hosting	Render
-Session	ASP.NET Session
+Session	ASP.NET Core Session
 Serialization	System.Text.Json
+<br>
 🗂 Project Structure
 Nova-Admin
 │
 ├── Controllers
 │   ├── FormController
 │   ├── AdminController
-│   └── HomeController
 │
 ├── Models
 │   ├── PersonalDetails
@@ -103,16 +91,16 @@ Nova-Admin
 ├── Views
 │   ├── Form Steps
 │   ├── Admin Dashboard
-│   └── Shared Layout
 │
 ├── Data
 │   └── ApplicationDbContext
 │
 └── Program.cs
 
+<br>
 🗄 Database Design
 
-Main Table: FormEntries
+Main Table → FormEntries
 
 Stores:
 
@@ -122,20 +110,17 @@ Contact Info
 
 Address
 
-Education (JSON stored)
+Education (stored as JSON)
 
-Education stored as JSON to support dynamic number of records.
+JSON used because education entries are dynamic in count.
 
-⚙ Environment Variables (Production)
-DATABASE_URL=postgresql://user:password@host/dbname
-ASPNETCORE_ENVIRONMENT=Production
-
+<br>
 ▶ Run Locally
-Clone
+Clone Repository
 git clone https://github.com/sp-108/Nova-Admin.git
 cd Nova-Admin
 
-Configure DB
+Setup Database
 
 Edit appsettings.json
 
@@ -146,53 +131,35 @@ Edit appsettings.json
 Apply Migration
 dotnet ef database update
 
-Run
+Run Project
 dotnet run
 
+<br>
 🔄 Application Flow
-Step 1 → Personal Details
-Step 2 → Qualification
-Step 3 → Address
-Step 4 → Preview
-Submit → Save to DB → Admin Panel
+Personal → Qualification → Address → Preview → Submit → Database → Admin Panel
 
-💼 Real-World Use Cases
+<br>
+💼 Use Cases
 
 College Admission Portal
 
 Job Application Portal
 
-Government Form System
+Government Registration System
 
-Scholarship Registration
+Scholarship Application
 
 Survey Data Collection
 
+<br>
 👨‍💻 Author
 
 Saurabh Prajapati
-B.Tech CSE (AI)
-Full-Stack Developer (.NET + AI + Systems)
+B.Tech CSE (AI) — Full Stack Developer
 
-GitHub: https://github.com/sp-108
+GitHub → https://github.com/sp-108
 
-⭐ Support
-
-If you like this project — give it a star ⭐
-It motivates a lot!
-
-📣 Recruiter Note
-
-This project demonstrates:
-
-Backend architecture
-
-DB modelling
-
-Session state workflow
-
-Production debugging
-
-Deployment troubleshooting
-
-Real-world form processing
+<br> <div align="center">
+⭐ If you like this project, give it a star ⭐
+</div>
+🧾 END
